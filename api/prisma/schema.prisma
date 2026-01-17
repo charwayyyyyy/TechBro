@@ -12,3 +12,173 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum CourseDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum LessonType {
+  MULTI_CHOICE
+  FILL_BLANK
+  CODE_EDITOR
+  DEBUG
+  DRAG_DROP
+}
+
+enum LeagueTier {
+  BRONZE
+  SILVER
+  GOLD
+  SAPPHIRE
+  RUBY
+  EMERALD
+  DIAMOND
+}
+
+enum FeedEventType {
+  LESSON_COMPLETED
+  ACHIEVEMENT_UNLOCKED
+  LEAGUE_PROMOTION
+  STREAK_MILESTONE
+}
+
+model User {
+  id            String            @id @default(uuid())
+  email         String            @unique
+  username      String            @unique
+  passwordHash  String?
+  xp            Int               @default(0)
+  level         Int               @default(1)
+  streak        Int               @default(0)
+  lastStreakAt  DateTime?
+  avatar        Json
+  role          Role              @default(USER)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  progresses        Progress[]
+  userAchievements  UserAchievement[]
+  userLeagues       UserLeague[]
+  feedEvents        FeedEvent[]
+  followers         Follow[]       @relation("followers")
+  following         Follow[]       @relation("following")
+}
+
+model Course {
+  id         String            @id @default(uuid())
+  language   String
+  difficulty CourseDifficulty
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  lessons    Lesson[]
+}
+
+model Lesson {
+  id         String      @id @default(uuid())
+  courseId   String
+  course     Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title      String
+  type       LessonType
+  content    Json
+  xpReward   Int
+  position   Int
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  progresses Progress[]
+
+  @@index([courseId, position])
+}
+
+model Progress {
+  id          String    @id @default(uuid())
+  userId      String
+  lessonId    String
+  completed   Boolean   @default(false)
+  score       Int       @default(0)
+  completedAt DateTime?
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model Achievement {
+  id          String            @id @default(uuid())
+  name        String
+  description String
+  icon        String
+  criteria    Json
+  createdAt   DateTime          @default(now())
+
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  id            String       @id @default(uuid())
+  userId        String
+  achievementId String
+  achievedAt    DateTime     @default(now())
+
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement  @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+}
+
+model League {
+  id        String      @id @default(uuid())
+  tier      LeagueTier
+  weekStart DateTime
+  weekEnd   DateTime
+
+  users     UserLeague[]
+
+  @@index([tier, weekStart, weekEnd])
+}
+
+model UserLeague {
+  id         String   @id @default(uuid())
+  userId     String
+  leagueId   String
+  rank       Int
+  xpThisWeek Int      @default(0)
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  league     League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, leagueId])
+}
+
+model FeedEvent {
+  id        String         @id @default(uuid())
+  userId    String
+  type      FeedEventType
+  payload   Json
+  createdAt DateTime       @default(now())
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower    User     @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
