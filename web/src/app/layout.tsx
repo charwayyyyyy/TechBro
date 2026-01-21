@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { BottomNav } from "../components/bottom-nav";
 import "./globals.css";

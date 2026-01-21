@@ -1,4 +1,10 @@
+"use client";
+
+import { useUserStore } from "@/store/use-user-store";
+
 export default function ProfilePage() {
+  const { xp, streak, level, avatar, gems } = useUserStore();
+  
   return (
     <div className="flex min-h-screen flex-col bg-sky-50 pb-24">
       <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -10,32 +16,35 @@ export default function ProfilePage() {
       <div className="flex-1 px-4 py-6">
         <div className="mb-6 flex flex-col items-center">
           <div className="mb-4 flex h-32 w-32 items-center justify-center rounded-full border-4 border-sky-100 bg-white text-6xl shadow-md">
-            👨🏿‍💻
+            <div 
+               className="h-full w-full rounded-full"
+               style={{ backgroundColor: avatar.color }} 
+            />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900">Charway</h2>
-          <p className="text-slate-500">Joined January 2026</p>
+          <h2 className="text-2xl font-bold text-slate-900">User</h2>
+          <p className="text-slate-500">Level {level}</p>
         </div>
 
         <div className="mb-6 grid grid-cols-2 gap-4">
           <div className="rounded-2xl border-2 border-slate-200 bg-white p-4">
             <div className="mb-1 text-2xl">🔥</div>
-            <div className="text-xl font-bold text-slate-700">12</div>
+            <div className="text-xl font-bold text-slate-700">{streak}</div>
             <div className="text-xs font-bold uppercase text-slate-400">
               Day Streak
             </div>
           </div>
           <div className="rounded-2xl border-2 border-slate-200 bg-white p-4">
             <div className="mb-1 text-2xl">⚡</div>
-            <div className="text-xl font-bold text-slate-700">1,450</div>
+            <div className="text-xl font-bold text-slate-700">{xp}</div>
             <div className="text-xs font-bold uppercase text-slate-400">
               Total XP
             </div>
           </div>
           <div className="rounded-2xl border-2 border-slate-200 bg-white p-4">
             <div className="mb-1 text-2xl">💎</div>
-            <div className="text-xl font-bold text-slate-700">Diamond</div>
+            <div className="text-xl font-bold text-slate-700">{gems}</div>
             <div className="text-xs font-bold uppercase text-slate-400">
-              Current League
+              Gems
             </div>
           </div>
           <div className="rounded-2xl border-2 border-slate-200 bg-white p-4">

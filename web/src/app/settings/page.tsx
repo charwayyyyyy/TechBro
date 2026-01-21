@@ -1,4 +1,19 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useUserStore } from "@/store/use-user-store";
+
 export default function SettingsPage() {
+  const router = useRouter();
+  const { setUser } = useUserStore();
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    // Optionally reset store here if needed, but for now we just clear token
+    // useUserStore.persist.clearStorage(); // if we want to clear persisted state
+    router.push("/login");
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-sky-50 pb-24">
       <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -40,7 +55,10 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <button className="w-full rounded-2xl border-2 border-slate-200 bg-white py-3 font-bold uppercase tracking-wide text-red-500 shadow-sm transition hover:bg-red-50 active:scale-95">
+        <button 
+          onClick={handleSignOut}
+          className="w-full rounded-2xl border-2 border-slate-200 bg-white py-3 font-bold uppercase tracking-wide text-red-500 shadow-sm transition hover:bg-red-50 active:scale-95"
+        >
           Sign Out
         </button>
       </div>

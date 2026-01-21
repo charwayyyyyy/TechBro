@@ -1,6 +1,41 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useUserStore } from "@/store/use-user-store";
+import { fetchClient } from "@/lib/api";
 import { SkillTree } from "../components/skill-tree";
 
 export default function Home() {
+  const router = useRouter();
+  const { xp, level, setUser } = useUserStore();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/onboarding");
+      return;
+    }
+
+    const loadUser = async () => {
+      try {
+        const user = await fetchClient("/auth/profile");
+        setUser(user);
+      } catch (err) {
+        console.error("Failed to load user", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUser();
+  }, [router, setUser]);
+
+  if (loading) {
+     return <div className="flex min-h-screen items-center justify-center bg-sky-50 text-sky-600">Loading...</div>;
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-sky-50">
       <main className="flex-1 overflow-y-auto px-4 pb-24 pt-6">
@@ -23,7 +58,7 @@ export default function Home() {
             <p className="text-sm font-medium">Daily goal</p>
             <div className="mt-2 flex items-center justify-between">
               <div>
-                <p className="text-3xl font-extrabold">20 XP</p>
+                <p className="text-3xl font-extrabold">{xp} XP</p>
                 <p className="text-xs opacity-90">Complete 1 lesson to stay on track</p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-600 text-2xl shadow-lg">
@@ -32,7 +67,7 @@ export default function Home() {
             </div>
           </div>
 
-          <SkillTree />
+          <SkillTree level={level} />
         </section>
       </main>
     </div>

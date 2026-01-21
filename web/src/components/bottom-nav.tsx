@@ -14,6 +14,11 @@ const tabs = [
 export function BottomNav() {
   const pathname = usePathname();
 
+  // Hide navbar on auth, onboarding, and lesson pages
+  if (["/login", "/signup", "/onboarding", "/lesson"].some((path) => pathname.startsWith(path))) {
+    return null;
+  }
+
   return (
     <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 px-4 pb-4">
       <div className="mx-auto flex h-16 items-center justify-between rounded-3xl bg-white/80 px-3 shadow-lg backdrop-blur">

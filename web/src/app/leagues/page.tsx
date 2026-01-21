@@ -1,12 +1,18 @@
+"use client";
+
+import { useUserStore } from "@/store/use-user-store";
+
 export default function LeaguesPage() {
+  const { xp, avatar } = useUserStore();
+
   const users = [
-    { rank: 1, name: "Charway", xp: 1250, avatar: "👨🏿‍💻" },
+    { rank: 1, name: "You", xp: xp, avatar: <div style={{width: 24, height: 24, borderRadius: '50%', backgroundColor: avatar.color}}></div> },
     { rank: 2, name: "Sarah", xp: 1100, avatar: "👩🏻‍💻" },
     { rank: 3, name: "David", xp: 950, avatar: "👨🏼‍💻" },
     { rank: 4, name: "Jessica", xp: 800, avatar: "👩🏾‍💻" },
     { rank: 5, name: "Michael", xp: 750, avatar: "👨🏻‍💻" },
-  ];
-
+  ].sort((a, b) => b.xp - a.xp).map((u, i) => ({ ...u, rank: i + 1 }));
+  
   return (
     <div className="flex min-h-screen flex-col bg-sky-50 pb-24">
       <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/60">

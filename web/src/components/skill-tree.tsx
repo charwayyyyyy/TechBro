@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const skills = [
   { id: "variables", title: "Variables", color: "bg-emerald-400", row: 0, col: 1 },
   { id: "data-types", title: "Data Types", color: "bg-sky-400", row: 1, col: 0 },
@@ -12,14 +14,15 @@ type SkillId = (typeof skills)[number]["id"];
 
 type SkillTreeProps = {
   activeSkill?: SkillId;
+  level?: number;
 };
 
-export function SkillTree({ activeSkill = "variables" }: SkillTreeProps) {
+export function SkillTree({ activeSkill = "variables", level = 1 }: SkillTreeProps) {
   return (
     <section className="mt-6">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-bold text-slate-900">Python path</h2>
-        <p className="text-xs font-medium text-sky-600">Beginner · 7 skills</p>
+        <p className="text-xs font-medium text-sky-600">Level {level} · 7 skills</p>
       </div>
       <div className="relative">
         <div className="absolute left-1/2 top-0 -z-10 h-full w-1 -translate-x-1/2 bg-sky-100" />
@@ -29,9 +32,19 @@ export function SkillTree({ activeSkill = "variables" }: SkillTreeProps) {
               {skills
                 .filter((s) => s.row === rowIndex)
                 .map((skill) => {
-                  const isActive = skill.id === activeSkill;
-                  const isLocked = skills.findIndex((s) => s.id === skill.id) > 0;
-                  const unlocked = !isLocked || skill.id === activeSkill;
+                  const skillIndex = skills.findIndex((s) => s.id === skill.id);
+                  const isUnlocked = skillIndex < level;
+                  const isActive = skillIndex === level - 1; // Current level skill is active
+                  
+                  const content = (
+                    <span className="text-[10px] leading-tight">
+                      {skill.title.split(" ").map((word) => (
+                        <span key={word} className="block">
+                          {word}
+                        </span>
+                      ))}
+                    </span>
+                  );
 
                   return (
                     <div
@@ -40,21 +53,22 @@ export function SkillTree({ activeSkill = "variables" }: SkillTreeProps) {
                         skill.col === 1 ? "col-start-2" : skill.col === 2 ? "col-start-3" : "col-start-1"
                       }`}
                     >
-                      <button
-                        className={`flex h-16 w-16 flex-col items-center justify-center rounded-full border-4 text-xs font-semibold shadow-md transition-all ${
-                          unlocked
-                            ? `${skill.color} border-sky-50 text-white`
-                            : "border-slate-200 bg-slate-100 text-slate-300"
-                        } ${isActive ? "scale-110 shadow-lg ring-4 ring-sky-200" : ""}`}
-                      >
-                        <span className="text-[10px] leading-tight">
-                          {skill.title.split(" ").map((word) => (
-                            <span key={word} className="block">
-                              {word}
-                            </span>
-                          ))}
-                        </span>
-                      </button>
+                      {isUnlocked ? (
+                        <Link
+                          href={`/lesson/${skill.id}`}
+                          className={`flex h-16 w-16 flex-col items-center justify-center rounded-full border-4 text-xs font-semibold shadow-md transition-all ${
+                            skill.color
+                          } border-sky-50 text-white ${isActive ? "scale-110 shadow-lg ring-4 ring-sky-200" : ""}`}
+                        >
+                          {content}
+                        </Link>
+                      ) : (
+                        <div
+                          className={`flex h-16 w-16 flex-col items-center justify-center rounded-full border-4 text-xs font-semibold shadow-md transition-all border-slate-200 bg-slate-100 text-slate-300`}
+                        >
+                          {content}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
