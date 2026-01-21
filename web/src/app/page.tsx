@@ -1,18 +1,6 @@
 import { SkillTree } from "../components/skill-tree";
 
-const tabs = [
-  { id: "home", label: "Home", icon: "🏠" },
-  { id: "leagues", label: "Leagues", icon: "🏆" },
-  { id: "feed", label: "Feed", icon: "👥" },
-  { id: "profile", label: "Profile", icon: "🎒" },
-  { id: "settings", label: "Settings", icon: "⚙️" },
-] as const;
-
-type TabId = (typeof tabs)[number]["id"];
-
 export default function Home() {
-  const activeTab: TabId = "home";
-
   return (
     <div className="flex min-h-screen flex-col bg-sky-50">
       <main className="flex-1 overflow-y-auto px-4 pb-24 pt-6">
@@ -47,35 +35,6 @@ export default function Home() {
           <SkillTree />
         </section>
       </main>
-
-      <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 px-4 pb-4">
-        <div className="mx-auto flex h-16 items-center justify-between rounded-3xl bg-white/80 px-3 shadow-lg backdrop-blur">
-          {tabs.map((tab) => {
-            const isActive = tab.id === activeTab;
-            return (
-              <button
-                key={tab.id}
-                className={`flex flex-1 flex-col items-center justify-center gap-0.5 text-xs transition-all ${
-                  isActive
-                    ? "text-sky-600"
-                    : "text-slate-400 hover:text-sky-500"
-                }`}
-              >
-                <span
-                  className={`flex h-9 w-9 items-center justify-center rounded-full text-lg transition-all ${
-                    isActive
-                      ? "bg-sky-100 shadow-sm"
-                      : "bg-transparent"
-                  }`}
-                >
-                  {tab.icon}
-                </span>
-                <span className="text-[10px] font-semibold">{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
     </div>
   );
 }
