@@ -16,10 +16,11 @@ export class FeedService {
     });
   }
 
-  async getFeed(userId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getFeed(_userId: string) {
     // For MVP, just get global feed or user's own feed + following
     // Since we don't have following UI yet, let's just show "Global Recent Activity" or just User's activity
-    
+
     // Better: Show events from everyone (Small community vibe)
     return this.prisma.feedEvent.findMany({
       take: 20,
@@ -37,11 +38,11 @@ export class FeedService {
                 outfitItem: true,
                 accessoryItem: true,
                 backgroundItem: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
   }
 }

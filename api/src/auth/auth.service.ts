@@ -13,15 +13,24 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findOneByEmail(email);
-    if (user && user.passwordHash && (await bcrypt.compare(pass, user.passwordHash))) {
+    if (
+      user &&
+      user.passwordHash &&
+      (await bcrypt.compare(pass, user.passwordHash))
+    ) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash, ...result } = user;
       return result;
     }
     return null;
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.id, email: user.email };
+  login(user: any) {
+    const payload = {
+      username: user.username,
+      sub: user.id,
+      email: user.email,
+    };
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -38,11 +47,13 @@ export class AuthService {
   }
 
   async signup(createUserDto: CreateUserDto) {
-    const existingUser = await this.usersService.findOneByEmail(createUserDto.email);
+    const existingUser = await this.usersService.findOneByEmail(
+      createUserDto.email,
+    );
     if (existingUser) {
       throw new UnauthorizedException('User already exists');
     }
-    
+
     const user = await this.usersService.create(createUserDto);
     return this.login(user);
   }
@@ -50,15 +61,15 @@ export class AuthService {
   async demoLogin() {
     const demoEmail = 'demo@techbro.com';
     let user = await this.usersService.findOneByEmail(demoEmail);
-    
+
     if (!user) {
       // Create rich demo user if not exists
       user = await this.usersService.create({
         email: demoEmail,
         username: 'TechBroDemo',
-        password: 'password123', 
+        password: 'password123',
       });
-      
+
       // Update with rich stats
       await this.usersService.update(user.id, {
         xp: 2500,
@@ -69,14 +80,14 @@ export class AuthService {
         avatar: {
           update: {
             skinColor: '#8d5524',
-          }
-        }
+          },
+        },
       });
-      
+
       // Fetch again to get updated fields
       user = await this.usersService.findOne(user.id);
     }
-    
+
     return this.login(user);
   }
 
@@ -85,6 +96,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...result } = user;
     return result;
   }

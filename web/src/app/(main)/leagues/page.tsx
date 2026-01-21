@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUserStore } from "@/store/use-user-store";
+import { useUserStore, AvatarItem } from "@/store/use-user-store";
 import { fetchClient } from "@/lib/api";
 import { UserAvatar } from "@/components/user-avatar";
 import { motion } from "framer-motion";
@@ -13,9 +13,23 @@ type LeagueEntry = {
   user: {
     id: string;
     username: string;
-    avatar: any;
+    avatar: {
+      skinColor: string;
+      skinItem: AvatarItem | null;
+      faceItem: AvatarItem | null;
+      hairItem: AvatarItem | null;
+      outfitItem: AvatarItem | null;
+      accessoryItem: AvatarItem | null;
+      backgroundItem: AvatarItem | null;
+    };
   };
   isCurrentUser: boolean;
+};
+
+type LeagueData = {
+  league: {
+    tier: string;
+  };
 };
 
 const LEAGUE_TIERS = [
@@ -29,8 +43,10 @@ const LEAGUE_TIERS = [
 ];
 
 export default function LeaguesPage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { xp } = useUserStore();
   const [leaderboard, setLeaderboard] = useState<LeagueEntry[]>([]);
-  const [currentLeague, setCurrentLeague] = useState<any>(null);
+  const [currentLeague, setCurrentLeague] = useState<LeagueData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -78,9 +94,6 @@ export default function LeaguesPage() {
         {/* Leaderboard List */}
         <div className="space-y-2 rounded-2xl border border-slate-200 bg-white shadow-sm">
           {leaderboard.map((entry, index) => {
-            const isPromotion = index < 10;
-            const isDemotion = index > 25; // Example
-            
             return (
               <motion.div
                 key={entry.id}

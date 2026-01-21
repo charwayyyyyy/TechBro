@@ -18,7 +18,7 @@ type SkillTreeProps = {
   currentLessonId?: string;
 };
 
-export function SkillTree({ course, currentLessonId }: SkillTreeProps) {
+export function SkillTree({ course }: SkillTreeProps) {
   if (!course) return null;
 
   const lessons = course.lessons;
@@ -40,8 +40,7 @@ export function SkillTree({ course, currentLessonId }: SkillTreeProps) {
         <div className="space-y-4 pb-6">
           {lessons.map((lesson, index) => {
             const col = getPosition(index);
-            const isCompleted = lesson.completed; // TODO: Pass this from parent
-            const isNext = !isCompleted && (index === 0 || lessons[index - 1].completed);
+            // const isCompleted = lesson.completed; 
             
             // For MVP, just assume linear progression based on currentLessonId or store
             // We'll fix this properly later. 

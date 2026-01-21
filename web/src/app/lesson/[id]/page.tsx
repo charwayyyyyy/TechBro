@@ -4,7 +4,7 @@ import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/use-user-store";
 import { fetchClient } from "@/lib/api";
-import { ArrowLeft, Check, X } from "lucide-react";
+import { X } from "lucide-react";
 
 type LessonContent = {
   question: string;
@@ -22,10 +22,10 @@ type Lesson = {
   content: LessonContent;
 };
 
-export default function LessonPage({ params }: { params: Promise<{ lessonId: string }> }) {
-  const { lessonId } = use(params);
+export default function LessonPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const router = useRouter();
-  const { addXp, hearts, decrementHeart, setUser } = useUserStore();
+  const { hearts, decrementHeart, setUser } = useUserStore();
 
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ export default function LessonPage({ params }: { params: Promise<{ lessonId: str
   useEffect(() => {
     const loadLesson = async () => {
       try {
-        const data = await fetchClient(`/lessons/${lessonId}`);
+        const data = await fetchClient(`/lessons/${id}`);
         setLesson(data);
       } catch (err) {
         console.error("Failed to load lesson", err);
@@ -47,7 +47,7 @@ export default function LessonPage({ params }: { params: Promise<{ lessonId: str
       }
     };
     loadLesson();
-  }, [lessonId]);
+  }, [id]);
 
   const handleCheck = async () => {
     if (selectedOption === null || !lesson) return;

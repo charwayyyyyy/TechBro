@@ -3,16 +3,24 @@
 import { useEffect, useState } from "react";
 import { fetchClient } from "@/lib/api";
 import { UserAvatar } from "@/components/user-avatar";
-import { formatDistanceToNow } from "date-fns";
+import { AvatarItem } from "@/store/use-user-store";
 
 type FeedEvent = {
   id: string;
   type: 'LESSON_COMPLETED' | 'ACHIEVEMENT_UNLOCKED' | 'LEAGUE_PROMOTION' | 'STREAK_MILESTONE';
-  payload: any;
+  payload: Record<string, string | number>;
   createdAt: string;
   user: {
     username: string;
-    avatar?: any;
+    avatar?: {
+      skinColor: string;
+      skinItem: AvatarItem | null;
+      faceItem: AvatarItem | null;
+      hairItem: AvatarItem | null;
+      outfitItem: AvatarItem | null;
+      accessoryItem: AvatarItem | null;
+      backgroundItem: AvatarItem | null;
+    };
   };
 };
 

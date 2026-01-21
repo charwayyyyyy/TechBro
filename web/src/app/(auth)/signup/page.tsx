@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/use-user-store";
@@ -8,7 +9,7 @@ import { fetchClient } from "@/lib/api";
 
 export default function SignupPage() {
   const router = useRouter();
-  const { avatar } = useUserStore();
+  const { avatar, setUser } = useUserStore();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,9 +31,32 @@ export default function SignupPage() {
       });
 
       localStorage.setItem("token", data.access_token);
+      setUser(data.user);
       router.push("/");
-    } catch (err: any) {
-      setError(err.message || "Failed to create account");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to create account");
+      }
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setError("");
+    try {
+      const data = await fetchClient("/auth/demo", {
+        method: "POST",
+      });
+      localStorage.setItem("token", data.access_token);
+      setUser(data.user);
+      router.push("/");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to login as demo user");
+      }
     }
   };
 
@@ -64,7 +88,7 @@ export default function SignupPage() {
             onClick={() => handleSocialLogin('Google')}
             className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-200 py-2.5 font-bold text-slate-700 transition hover:bg-slate-50 active:scale-95"
           >
-             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5" />
+             <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={20} height={20} className="h-5 w-5" />
              Sign up with Google
           </button>
           <button 
@@ -72,7 +96,7 @@ export default function SignupPage() {
             onClick={() => handleSocialLogin('GitHub')}
             className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-200 py-2.5 font-bold text-slate-700 transition hover:bg-slate-50 active:scale-95"
           >
-             <img src="https://www.svgrepo.com/show/512317/github-142.svg" alt="GitHub" className="h-5 w-5" />
+             <Image src="https://www.svgrepo.com/show/512317/github-142.svg" alt="GitHub" width={20} height={20} className="h-5 w-5" />
              Sign up with GitHub
           </button>
         </div>
@@ -143,6 +167,14 @@ export default function SignupPage() {
             className="w-full rounded-xl bg-sky-500 py-3 font-bold uppercase tracking-wide text-white shadow-md transition hover:bg-sky-600 active:scale-95 active:shadow-sm"
           >
             Create Account
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            className="w-full rounded-xl bg-purple-500 py-3 font-bold uppercase tracking-wide text-white shadow-md transition hover:bg-purple-600 active:scale-95 active:shadow-sm"
+          >
+            Try Demo Account
           </button>
         </form>
 

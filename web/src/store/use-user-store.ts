@@ -1,6 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+export interface AvatarItem {
+  id: string;
+  type: string;
+  name: string;
+  assetUrl: string;
+  rarity: string;
+  price: number;
+}
+
 interface UserState {
   xp: number;
   level: number;
@@ -13,12 +22,12 @@ interface UserState {
   experienceLevel: string; // 'new' | 'beginner' | 'intermediate' | 'advanced'
   avatar: {
     skinColor: string;
-    skinItem: any;
-    faceItem: any;
-    hairItem: any;
-    outfitItem: any;
-    accessoryItem: any;
-    backgroundItem: any;
+    skinItem: AvatarItem | null;
+    faceItem: AvatarItem | null;
+    hairItem: AvatarItem | null;
+    outfitItem: AvatarItem | null;
+    accessoryItem: AvatarItem | null;
+    backgroundItem: AvatarItem | null;
   };
 
   // Actions
@@ -26,7 +35,7 @@ interface UserState {
   setExperienceLevel: (level: string) => void;
   setAvatar: (avatar: Partial<UserState['avatar']>) => void;
   addXp: (amount: number) => void;
-  setUser: (user: Partial<UserState>) => void;
+  setUser: (user: Partial<UserState> | ((state: UserState) => Partial<UserState>)) => void;
   decrementHeart: () => void;
 }
 
@@ -66,7 +75,10 @@ export const useUserStore = create<UserState>()(
         }
         return { xp: newXp, level: newLevel };
       }),
-      setUser: (user) => set((state) => ({ ...state, ...user })),
+      setUser: (userOrFn) => set((state) => {
+        const user = typeof userOrFn === 'function' ? userOrFn(state) : userOrFn;
+        return { ...state, ...user };
+      }),
       decrementHeart: () => set((state) => ({ hearts: Math.max(0, state.hearts - 1) })),
     }),
     {

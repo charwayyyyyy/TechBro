@@ -1,5 +1,3 @@
-import { motion } from "framer-motion";
-
 type AvatarProps = {
   skinColor: string;
   skinItem?: { assetUrl: string } | null;
@@ -14,6 +12,7 @@ type AvatarProps = {
 
 export function UserAvatar({
   skinColor,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   skinItem,
   faceItem,
   hairItem,

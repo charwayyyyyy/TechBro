@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUserStore } from "@/store/use-user-store";
 import { fetchClient } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useUserStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,9 +25,14 @@ export default function LoginPage() {
       });
       
       localStorage.setItem("token", data.access_token);
+      setUser(data.user);
       router.push("/");
-    } catch (err: any) {
-      setError(err.message || "Failed to login");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to login");
+      }
     }
   };
 
@@ -35,9 +43,14 @@ export default function LoginPage() {
         method: "POST",
       });
       localStorage.setItem("token", data.access_token);
+      setUser(data.user);
       router.push("/");
-    } catch (err: any) {
-      setError(err.message || "Failed to login as demo user");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to login as demo user");
+      }
     }
   };
 
@@ -69,7 +82,7 @@ export default function LoginPage() {
             onClick={() => handleSocialLogin('Google')}
             className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-200 py-2.5 font-bold text-slate-700 transition hover:bg-slate-50 active:scale-95"
           >
-             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5" />
+             <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={20} height={20} className="h-5 w-5" />
              Continue with Google
           </button>
           <button 
@@ -77,7 +90,7 @@ export default function LoginPage() {
             onClick={() => handleSocialLogin('GitHub')}
             className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-200 py-2.5 font-bold text-slate-700 transition hover:bg-slate-50 active:scale-95"
           >
-             <img src="https://www.svgrepo.com/show/512317/github-142.svg" alt="GitHub" className="h-5 w-5" />
+             <Image src="https://www.svgrepo.com/show/512317/github-142.svg" alt="GitHub" width={20} height={20} className="h-5 w-5" />
              Continue with GitHub
           </button>
         </div>

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AvatarService } from './avatar.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -19,15 +28,19 @@ export class AvatarController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('me')
-  updateAvatar(@Request() req: any, @Body() body: {
-    skinColor?: string;
-    skinItemId?: string;
-    faceItemId?: string;
-    hairItemId?: string;
-    outfitItemId?: string;
-    accessoryItemId?: string;
-    backgroundItemId?: string;
-  }) {
+  updateAvatar(
+    @Request() req: any,
+    @Body()
+    body: {
+      skinColor?: string;
+      skinItemId?: string;
+      faceItemId?: string;
+      hairItemId?: string;
+      outfitItemId?: string;
+      accessoryItemId?: string;
+      backgroundItemId?: string;
+    },
+  ) {
     return this.avatarService.updateAvatar(req.user.userId, body);
   }
 

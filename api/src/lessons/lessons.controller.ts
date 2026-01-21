@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Request, OnModuleInit } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+  OnModuleInit,
+} from '@nestjs/common';
 import { LessonsService } from './lessons.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -22,7 +31,11 @@ export class LessonsController implements OnModuleInit {
 
   @UseGuards(AuthGuard('jwt'))
   @Post(':id/complete')
-  completeLesson(@Request() req: any, @Param('id') id: string, @Body() body: { score: number }) {
+  completeLesson(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() body: { score: number },
+  ) {
     return this.lessonsService.completeLesson(req.user.userId, id, body.score);
   }
 }

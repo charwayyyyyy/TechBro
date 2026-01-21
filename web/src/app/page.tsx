@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Code, Trophy, Users, Zap, Gamepad2, Sparkles } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Code, Zap, Trophy, Sparkles, Gamepad2 } from "lucide-react";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -20,8 +19,6 @@ const staggerContainer = {
 };
 
 export default function LandingPage() {
-  const router = useRouter();
-
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
       {/* Header/Nav */}
@@ -111,7 +108,7 @@ export default function LandingPage() {
                   <p><span className="text-purple-400">def</span> <span className="text-blue-400">solve_challenge</span>(user):</p>
                   <p className="pl-4">xp = <span className="text-orange-400">100</span></p>
                   <p className="pl-4">streak = user.streak + <span className="text-orange-400">1</span></p>
-                  <p className="pl-4"><span className="text-purple-400">return</span> <span className="text-green-400">"Level Up!"</span></p>
+                  <p className="pl-4"><span className="text-purple-400">return</span> <span className="text-green-400">&quot;Level Up!&quot;</span></p>
                   <br />
                   <p className="animate-pulse border-l-2 border-sky-500 pl-1">_</p>
                 </div>

@@ -1,11 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useUserStore } from "@/store/use-user-store";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { setUser } = useUserStore();
 
   const handleSignOut = () => {
     localStorage.removeItem("token");

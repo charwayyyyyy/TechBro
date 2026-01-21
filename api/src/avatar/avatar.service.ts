@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, NotFoundException, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AvatarItemType, AvatarItemRarity } from '@prisma/client';
 
@@ -34,19 +39,22 @@ export class AvatarService implements OnModuleInit {
 
     return {
       equipped: avatar,
-      unlocked: unlockedItems.map(u => u.item),
+      unlocked: unlockedItems.map((u) => u.item),
     };
   }
 
-  async updateAvatar(userId: string, data: {
-    skinColor?: string;
-    skinItemId?: string;
-    faceItemId?: string;
-    hairItemId?: string;
-    outfitItemId?: string;
-    accessoryItemId?: string;
-    backgroundItemId?: string;
-  }) {
+  async updateAvatar(
+    userId: string,
+    data: {
+      skinColor?: string;
+      skinItemId?: string;
+      faceItemId?: string;
+      hairItemId?: string;
+      outfitItemId?: string;
+      accessoryItemId?: string;
+      backgroundItemId?: string;
+    },
+  ) {
     // Verify ownership of items if they are provided
     const itemIds = [
       data.skinItemId,
@@ -66,7 +74,9 @@ export class AvatarService implements OnModuleInit {
       });
 
       if (unlockedCount !== itemIds.length) {
-        throw new BadRequestException('You do not own one or more of these items');
+        throw new BadRequestException(
+          'You do not own one or more of these items',
+        );
       }
     }
 
@@ -86,7 +96,7 @@ export class AvatarService implements OnModuleInit {
         outfitItem: true,
         accessoryItem: true,
         backgroundItem: true,
-      }
+      },
     });
   }
 
@@ -147,28 +157,100 @@ export class AvatarService implements OnModuleInit {
 
     const items = [
       // Skins
-      { type: AvatarItemType.SKIN, name: 'Default Skin', assetUrl: 'skin_default', price: 0, rarity: AvatarItemRarity.COMMON },
-      { type: AvatarItemType.SKIN, name: 'Tan Skin', assetUrl: 'skin_tan', price: 100, rarity: AvatarItemRarity.COMMON },
-      
+      {
+        type: AvatarItemType.SKIN,
+        name: 'Default Skin',
+        assetUrl: 'skin_default',
+        price: 0,
+        rarity: AvatarItemRarity.COMMON,
+      },
+      {
+        type: AvatarItemType.SKIN,
+        name: 'Tan Skin',
+        assetUrl: 'skin_tan',
+        price: 100,
+        rarity: AvatarItemRarity.COMMON,
+      },
+
       // Faces
-      { type: AvatarItemType.FACE, name: 'Smile', assetUrl: 'face_smile', price: 0, rarity: AvatarItemRarity.COMMON },
-      { type: AvatarItemType.FACE, name: 'Cool', assetUrl: 'face_cool', price: 200, rarity: AvatarItemRarity.RARE },
-      
+      {
+        type: AvatarItemType.FACE,
+        name: 'Smile',
+        assetUrl: 'face_smile',
+        price: 0,
+        rarity: AvatarItemRarity.COMMON,
+      },
+      {
+        type: AvatarItemType.FACE,
+        name: 'Cool',
+        assetUrl: 'face_cool',
+        price: 200,
+        rarity: AvatarItemRarity.RARE,
+      },
+
       // Hair
-      { type: AvatarItemType.HAIR, name: 'Messy', assetUrl: 'hair_messy', price: 0, rarity: AvatarItemRarity.COMMON },
-      { type: AvatarItemType.HAIR, name: 'Punk', assetUrl: 'hair_punk', price: 300, rarity: AvatarItemRarity.RARE },
-      
+      {
+        type: AvatarItemType.HAIR,
+        name: 'Messy',
+        assetUrl: 'hair_messy',
+        price: 0,
+        rarity: AvatarItemRarity.COMMON,
+      },
+      {
+        type: AvatarItemType.HAIR,
+        name: 'Punk',
+        assetUrl: 'hair_punk',
+        price: 300,
+        rarity: AvatarItemRarity.RARE,
+      },
+
       // Outfits
-      { type: AvatarItemType.OUTFIT, name: 'T-Shirt', assetUrl: 'outfit_tshirt', price: 0, rarity: AvatarItemRarity.COMMON },
-      { type: AvatarItemType.OUTFIT, name: 'Hoodie', assetUrl: 'outfit_hoodie', price: 400, rarity: AvatarItemRarity.EPIC },
-      
+      {
+        type: AvatarItemType.OUTFIT,
+        name: 'T-Shirt',
+        assetUrl: 'outfit_tshirt',
+        price: 0,
+        rarity: AvatarItemRarity.COMMON,
+      },
+      {
+        type: AvatarItemType.OUTFIT,
+        name: 'Hoodie',
+        assetUrl: 'outfit_hoodie',
+        price: 400,
+        rarity: AvatarItemRarity.EPIC,
+      },
+
       // Accessories
-      { type: AvatarItemType.ACCESSORY, name: 'None', assetUrl: '', price: 0, rarity: AvatarItemRarity.COMMON },
-      { type: AvatarItemType.ACCESSORY, name: 'Glasses', assetUrl: 'acc_glasses', price: 150, rarity: AvatarItemRarity.COMMON },
-      
+      {
+        type: AvatarItemType.ACCESSORY,
+        name: 'None',
+        assetUrl: '',
+        price: 0,
+        rarity: AvatarItemRarity.COMMON,
+      },
+      {
+        type: AvatarItemType.ACCESSORY,
+        name: 'Glasses',
+        assetUrl: 'acc_glasses',
+        price: 150,
+        rarity: AvatarItemRarity.COMMON,
+      },
+
       // Backgrounds
-      { type: AvatarItemType.BACKGROUND, name: 'White', assetUrl: 'bg_white', price: 0, rarity: AvatarItemRarity.COMMON },
-      { type: AvatarItemType.BACKGROUND, name: 'Space', assetUrl: 'bg_space', price: 1000, rarity: AvatarItemRarity.LEGENDARY },
+      {
+        type: AvatarItemType.BACKGROUND,
+        name: 'White',
+        assetUrl: 'bg_white',
+        price: 0,
+        rarity: AvatarItemRarity.COMMON,
+      },
+      {
+        type: AvatarItemType.BACKGROUND,
+        name: 'Space',
+        assetUrl: 'bg_space',
+        price: 1000,
+        rarity: AvatarItemRarity.LEGENDARY,
+      },
     ];
 
     for (const item of items) {

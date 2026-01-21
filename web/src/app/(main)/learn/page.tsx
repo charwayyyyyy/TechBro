@@ -6,10 +6,22 @@ import { useUserStore } from "@/store/use-user-store";
 import { fetchClient } from "@/lib/api";
 import { SkillTree } from "@/components/skill-tree";
 
+type Course = {
+  id: string;
+  language: string;
+  difficulty: string;
+  lessons: {
+    id: string;
+    title: string;
+    position: number;
+    completed?: boolean;
+  }[];
+};
+
 export default function Home() {
   const router = useRouter();
-  const { xp, level, setUser } = useUserStore();
-  const [courses, setCourses] = useState<any[]>([]);
+  const { xp, setUser } = useUserStore();
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

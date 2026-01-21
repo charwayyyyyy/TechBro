@@ -31,7 +31,9 @@ export class LessonsService {
   }
 
   async completeLesson(userId: string, lessonId: string, score: number) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+    });
     if (!lesson) throw new NotFoundException('Lesson not found');
 
     // 1. Record Progress
@@ -54,7 +56,7 @@ export class LessonsService {
     });
 
     // 2. Add XP (if not already completed? Or allow grinding?)
-    // For MVP, allow grinding but maybe reduced XP? 
+    // For MVP, allow grinding but maybe reduced XP?
     // Let's just give full XP for now.
     const xpEarned = lesson.xpReward;
 
@@ -73,7 +75,7 @@ export class LessonsService {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     const now = new Date();
     const lastStreak = user?.lastStreakAt ? new Date(user.lastStreakAt) : null;
-    
+
     let streakUpdated = false;
 
     if (!lastStreak) {
@@ -85,8 +87,10 @@ export class LessonsService {
       streakUpdated = true;
     } else {
       const isToday = lastStreak.toDateString() === now.toDateString();
-      const isYesterday = new Date(now.setDate(now.getDate() - 1)).toDateString() === lastStreak.toDateString();
-      
+      const isYesterday =
+        new Date(now.setDate(now.getDate() - 1)).toDateString() ===
+        lastStreak.toDateString();
+
       if (!isToday) {
         if (isYesterday) {
           await this.prisma.user.update({
@@ -113,9 +117,13 @@ export class LessonsService {
     });
 
     if (streakUpdated) {
-       await this.feedService.createEvent(userId, FeedEventType.STREAK_MILESTONE, {
+      await this.feedService.createEvent(
+        userId,
+        FeedEventType.STREAK_MILESTONE,
+        {
           days: user?.streak ? user.streak + 1 : 1,
-       });
+        },
+      );
     }
 
     return {

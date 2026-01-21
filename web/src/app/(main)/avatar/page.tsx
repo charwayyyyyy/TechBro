@@ -1,22 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUserStore } from "@/store/use-user-store";
+import { useUserStore, AvatarItem } from "@/store/use-user-store";
 import { fetchClient } from "@/lib/api";
 import { UserAvatar } from "@/components/user-avatar";
-import { ArrowLeft, Check, Lock, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-
-type AvatarItem = {
-  id: string;
-  type: 'SKIN' | 'FACE' | 'HAIR' | 'OUTFIT' | 'ACCESSORY' | 'BACKGROUND';
-  name: string;
-  assetUrl: string;
-  rarity: 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY';
-  price: number;
-};
 
 const CATEGORIES = [
   { id: 'SKIN', label: 'Body', icon: '🎨' },
@@ -28,7 +18,6 @@ const CATEGORIES = [
 ];
 
 export default function AvatarPage() {
-  const router = useRouter();
   const { avatar, setAvatar, gems, setUser } = useUserStore();
   const [items, setItems] = useState<AvatarItem[]>([]);
   const [unlockedIds, setUnlockedIds] = useState<string[]>([]);
@@ -45,7 +34,7 @@ export default function AvatarPage() {
         ]);
 
         setItems(allItems);
-        setUnlockedIds(userAvatarData.unlocked.map((u: any) => u.id));
+        setUnlockedIds(userAvatarData.unlocked.map((u: AvatarItem) => u.id));
         
         // Sync store with backend avatar state
         if (userAvatarData.equipped) {
