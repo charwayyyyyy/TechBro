@@ -32,7 +32,7 @@ export default function SignupPage() {
 
       localStorage.setItem("token", data.access_token);
       setUser(data.user);
-      router.push("/");
+      router.push("/learn");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -50,7 +50,7 @@ export default function SignupPage() {
       });
       localStorage.setItem("token", data.access_token);
       setUser(data.user);
-      router.push("/");
+      router.push("/learn");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);

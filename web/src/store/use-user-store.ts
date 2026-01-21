@@ -77,6 +77,13 @@ export const useUserStore = create<UserState>()(
       }),
       setUser: (userOrFn) => set((state) => {
         const user = typeof userOrFn === 'function' ? userOrFn(state) : userOrFn;
+        
+        // Protect against null avatar from API
+        if (user.avatar === null) {
+          const { avatar, ...rest } = user;
+          return { ...state, ...rest };
+        }
+        
         return { ...state, ...user };
       }),
       decrementHeart: () => set((state) => ({ hearts: Math.max(0, state.hearts - 1) })),

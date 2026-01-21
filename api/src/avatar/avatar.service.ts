@@ -66,17 +66,29 @@ export class AvatarService implements OnModuleInit {
     ].filter(Boolean) as string[];
 
     if (itemIds.length > 0) {
-      const unlockedCount = await this.prisma.unlockedAvatarItem.count({
-        where: {
-          userId,
-          itemId: { in: itemIds },
-        },
+      // Check which items are actually paid items
+      const itemsToCheck = await this.prisma.avatarItem.findMany({
+        where: { id: { in: itemIds } },
+        select: { id: true, price: true },
       });
 
-      if (unlockedCount !== itemIds.length) {
-        throw new BadRequestException(
-          'You do not own one or more of these items',
-        );
+      const paidItemIds = itemsToCheck
+        .filter((item) => item.price > 0)
+        .map((item) => item.id);
+
+      if (paidItemIds.length > 0) {
+        const unlockedCount = await this.prisma.unlockedAvatarItem.count({
+          where: {
+            userId,
+            itemId: { in: paidItemIds },
+          },
+        });
+
+        if (unlockedCount !== paidItemIds.length) {
+          throw new BadRequestException(
+            'You do not own one or more of these items',
+          );
+        }
       }
     }
 

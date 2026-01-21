@@ -8,6 +8,17 @@ import { Edit2 } from "lucide-react";
 export default function ProfilePage() {
   const { xp, streak, level, avatar, gems } = useUserStore();
   
+  // Ensure avatar exists with defaults to prevent runtime errors
+  const safeAvatar = avatar || {
+    skinColor: '#ffdbac',
+    skinItem: null,
+    faceItem: null,
+    hairItem: null,
+    outfitItem: null,
+    accessoryItem: null,
+    backgroundItem: null,
+  };
+  
   return (
     <div className="flex min-h-screen flex-col bg-sky-50 pb-24">
       <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -20,13 +31,13 @@ export default function ProfilePage() {
         <div className="mb-6 flex flex-col items-center">
           <div className="relative mb-4">
             <UserAvatar 
-              skinColor={avatar.skinColor}
-              skinItem={avatar.skinItem}
-              faceItem={avatar.faceItem}
-              hairItem={avatar.hairItem}
-              outfitItem={avatar.outfitItem}
-              accessoryItem={avatar.accessoryItem}
-              backgroundItem={avatar.backgroundItem}
+              skinColor={safeAvatar.skinColor}
+              skinItem={safeAvatar.skinItem}
+              faceItem={safeAvatar.faceItem}
+              hairItem={safeAvatar.hairItem}
+              outfitItem={safeAvatar.outfitItem}
+              accessoryItem={safeAvatar.accessoryItem}
+              backgroundItem={safeAvatar.backgroundItem}
               size="xl"
             />
             <Link 

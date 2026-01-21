@@ -40,8 +40,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
         setLesson(data);
       } catch (err) {
         console.error("Failed to load lesson", err);
-        // Fallback or redirect?
-        // router.push("/learn");
+        setError("Failed to load lesson");
       } finally {
         setLoading(false);
       }
@@ -94,6 +93,21 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center bg-white text-sky-500">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center bg-white p-4 text-center">
+        <h2 className="mb-2 text-xl font-bold text-red-500">Error</h2>
+        <p className="mb-4 text-slate-600">{error}</p>
+        <button
+          onClick={() => router.push("/learn")}
+          className="rounded-xl bg-sky-500 px-6 py-2 font-bold text-white shadow-md active:translate-y-[2px]"
+        >
+          Back to Home
+        </button>
+      </div>
+    );
   }
 
   if (hearts === 0) {

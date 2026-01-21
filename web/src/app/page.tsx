@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Code, Zap, Trophy, Sparkles, Gamepad2 } from "lucide-react";
+import { useUserStore } from "@/store/use-user-store";
+import { fetchClient } from "@/lib/api";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -19,6 +22,23 @@ const staggerContainer = {
 };
 
 export default function LandingPage() {
+  const router = useRouter();
+  const { setUser } = useUserStore();
+
+  const handleDemoLogin = async () => {
+    try {
+      const data = await fetchClient("/auth/demo", {
+        method: "POST",
+      });
+      localStorage.setItem("token", data.access_token);
+      setUser(data.user);
+      router.push("/learn");
+    } catch (err) {
+      console.error("Failed to login as demo user", err);
+      alert("Failed to login as demo user. Please try again.");
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
       {/* Header/Nav */}
@@ -28,7 +48,7 @@ export default function LandingPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500 text-white">
               <Code className="h-5 w-5" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900">TechBro</span>
+            <Link href="/" className="text-xl font-bold tracking-tight text-slate-900">TechBro</Link>
           </div>
           <div className="flex items-center gap-4">
             <Link 
@@ -81,14 +101,23 @@ export default function LandingPage() {
                 >
                   Get Started
                 </Link>
-                <Link 
-                  href="/login"
+                <button 
+                  onClick={handleDemoLogin}
                   className="inline-flex h-12 items-center justify-center rounded-2xl border-2 border-slate-200 bg-white px-8 text-lg font-bold text-slate-700 shadow-[0_4px_0_0_#e2e8f0] transition-all hover:bg-slate-50 hover:text-sky-500 active:translate-y-[2px] active:shadow-[0_2px_0_0_#e2e8f0]"
                 >
                   Try Demo Account
-                </Link>
-              </motion.div>
-            </motion.div>
+                </button>
+               </motion.div>
+               {error && (
+                 <motion.p 
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1 }}
+                   className="mt-4 text-center text-sm font-bold text-red-500 lg:text-left"
+                 >
+                   {error}
+                 </motion.p>
+               )}
+             </motion.div>
 
             {/* Hero Image / Graphic */}
             <motion.div 

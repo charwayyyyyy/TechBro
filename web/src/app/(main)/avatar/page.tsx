@@ -19,6 +19,17 @@ const CATEGORIES = [
 
 export default function AvatarPage() {
   const { avatar, setAvatar, gems, setUser } = useUserStore();
+  
+  const safeAvatar = avatar || {
+    skinColor: '#ffdbac',
+    skinItem: null,
+    faceItem: null,
+    hairItem: null,
+    outfitItem: null,
+    accessoryItem: null,
+    backgroundItem: null,
+  };
+  
   const [items, setItems] = useState<AvatarItem[]>([]);
   const [unlockedIds, setUnlockedIds] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState('SKIN');
@@ -141,13 +152,13 @@ export default function AvatarPage() {
       {/* Preview Area */}
       <div className="flex flex-col items-center justify-center bg-gradient-to-b from-white to-sky-50 py-8">
         <UserAvatar
-          skinColor={avatar.skinColor}
-          skinItem={avatar.skinItem}
-          faceItem={avatar.faceItem}
-          hairItem={avatar.hairItem}
-          outfitItem={avatar.outfitItem}
-          accessoryItem={avatar.accessoryItem}
-          backgroundItem={avatar.backgroundItem}
+          skinColor={safeAvatar.skinColor}
+          skinItem={safeAvatar.skinItem}
+          faceItem={safeAvatar.faceItem}
+          hairItem={safeAvatar.hairItem}
+          outfitItem={safeAvatar.outfitItem}
+          accessoryItem={safeAvatar.accessoryItem}
+          backgroundItem={safeAvatar.backgroundItem}
           size="xl"
           className="shadow-xl"
         />
@@ -178,12 +189,12 @@ export default function AvatarPage() {
         {filteredItems.map((item) => {
           const isUnlocked = unlockedIds.includes(item.id) || item.price === 0;
           const isEquipped = 
-            (item.type === 'SKIN' && avatar.skinItem?.id === item.id) ||
-            (item.type === 'FACE' && avatar.faceItem?.id === item.id) ||
-            (item.type === 'HAIR' && avatar.hairItem?.id === item.id) ||
-            (item.type === 'OUTFIT' && avatar.outfitItem?.id === item.id) ||
-            (item.type === 'ACCESSORY' && avatar.accessoryItem?.id === item.id) ||
-            (item.type === 'BACKGROUND' && avatar.backgroundItem?.id === item.id);
+            (item.type === 'SKIN' && safeAvatar.skinItem?.id === item.id) ||
+            (item.type === 'FACE' && safeAvatar.faceItem?.id === item.id) ||
+            (item.type === 'HAIR' && safeAvatar.hairItem?.id === item.id) ||
+            (item.type === 'OUTFIT' && safeAvatar.outfitItem?.id === item.id) ||
+            (item.type === 'ACCESSORY' && safeAvatar.accessoryItem?.id === item.id) ||
+            (item.type === 'BACKGROUND' && safeAvatar.backgroundItem?.id === item.id);
 
           return (
             <motion.div
