@@ -45,6 +45,35 @@ export class AuthService {
     return this.login(user);
   }
 
+  async demoLogin() {
+    const demoEmail = 'demo@techbro.com';
+    let user = await this.usersService.findOneByEmail(demoEmail);
+    
+    if (!user) {
+      // Create rich demo user if not exists
+      user = await this.usersService.create({
+        email: demoEmail,
+        username: 'TechBroDemo',
+        password: 'password123', // In a real app, this would be hashed
+        avatar: { color: 'purple', accessory: 'glasses', background: 'default' },
+      });
+      
+      // Update with rich stats
+      await this.usersService.update(user.id, {
+        xp: 2500,
+        level: 5,
+        streak: 14,
+        gems: 500,
+        hearts: 5
+      });
+      
+      // Fetch again to get updated fields
+      user = await this.usersService.findOne(user.id);
+    }
+    
+    return this.login(user);
+  }
+
   async getProfile(userId: string) {
     const user = await this.usersService.findOne(userId);
     if (!user) {

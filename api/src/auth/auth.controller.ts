@@ -18,6 +18,11 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
+  @Post('demo')
+  async demoLogin() {
+    return this.authService.demoLogin();
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
   getProfile(@Request() req: any) {
