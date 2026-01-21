@@ -56,8 +56,10 @@ model User {
   xp            Int               @default(0)
   level         Int               @default(1)
   streak        Int               @default(0)
+  gems          Int               @default(0)
+  hearts        Int               @default(5)
   lastStreakAt  DateTime?
-  avatar        Json
+  avatar        UserAvatar?
   role          Role              @default(USER)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
@@ -68,6 +70,80 @@ model User {
   feedEvents        FeedEvent[]
   followers         Follow[]       @relation("followers")
   following         Follow[]       @relation("following")
+  unlockedAvatarItems UnlockedAvatarItem[]
+}
+
+model UserAvatar {
+  id           String @id @default(uuid())
+  userId       String @unique
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  skinColor    String? 
+  
+  skinItemId   String?
+  skinItem     AvatarItem? @relation("EquippedSkin", fields: [skinItemId], references: [id])
+  
+  faceItemId   String?
+  faceItem     AvatarItem? @relation("EquippedFace", fields: [faceItemId], references: [id])
+  
+  hairItemId   String?
+  hairItem     AvatarItem? @relation("EquippedHair", fields: [hairItemId], references: [id])
+  
+  outfitItemId String?
+  outfitItem   AvatarItem? @relation("EquippedOutfit", fields: [outfitItemId], references: [id])
+  
+  accessoryItemId String?
+  accessoryItem   AvatarItem? @relation("EquippedAccessory", fields: [accessoryItemId], references: [id])
+  
+  backgroundItemId String?
+  backgroundItem   AvatarItem? @relation("EquippedBackground", fields: [backgroundItemId], references: [id])
+}
+
+enum AvatarItemType {
+  SKIN
+  FACE
+  HAIR
+  OUTFIT
+  ACCESSORY
+  BACKGROUND
+}
+
+enum AvatarItemRarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+model AvatarItem {
+  id          String           @id @default(uuid())
+  type        AvatarItemType
+  name        String
+  assetUrl    String
+  rarity      AvatarItemRarity @default(COMMON)
+  unlockType  String?          
+  unlockValue Int?             
+  price       Int              @default(0) 
+
+  unlockedBy  UnlockedAvatarItem[]
+  
+  equippedSkins       UserAvatar[] @relation("EquippedSkin")
+  equippedFaces       UserAvatar[] @relation("EquippedFace")
+  equippedHairs       UserAvatar[] @relation("EquippedHair")
+  equippedOutfits     UserAvatar[] @relation("EquippedOutfit")
+  equippedAccessories UserAvatar[] @relation("EquippedAccessory")
+  equippedBackgrounds UserAvatar[] @relation("EquippedBackground")
+}
+
+model UnlockedAvatarItem {
+  id        String     @id @default(uuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId    String
+  item      AvatarItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  acquiredAt DateTime   @default(now())
+
+  @@unique([userId, itemId])
 }
 
 model Course {

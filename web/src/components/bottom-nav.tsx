@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const tabs = [
-  { id: "home", label: "Home", icon: "🏠", href: "/" },
+  { id: "home", label: "Home", icon: "🏠", href: "/learn" },
   { id: "leagues", label: "Leagues", icon: "🏆", href: "/leagues" },
   { id: "feed", label: "Feed", icon: "👥", href: "/feed" },
   { id: "profile", label: "Profile", icon: "🎒", href: "/profile" },
@@ -14,16 +14,11 @@ const tabs = [
 export function BottomNav() {
   const pathname = usePathname();
 
-  // Hide navbar on auth, onboarding, and lesson pages
-  if (["/login", "/signup", "/onboarding", "/lesson"].some((path) => pathname.startsWith(path))) {
-    return null;
-  }
-
   return (
-    <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 px-4 pb-4">
+    <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 px-4 pb-4 sm:max-w-lg">
       <div className="mx-auto flex h-16 items-center justify-between rounded-3xl bg-white/80 px-3 shadow-lg backdrop-blur">
         {tabs.map((tab) => {
-          const isActive = pathname === tab.href;
+          const isActive = pathname === tab.href || (tab.href !== "/learn" && pathname.startsWith(tab.href));
           return (
             <Link
               key={tab.id}

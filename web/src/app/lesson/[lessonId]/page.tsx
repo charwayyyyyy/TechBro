@@ -1,59 +1,60 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/use-user-store";
 import { fetchClient } from "@/lib/api";
+import { ArrowLeft, Check, X } from "lucide-react";
 
-// Mock Data
-const lessons = {
-  variables: [
-    {
-      id: 1,
-      type: "multiple-choice",
-      question: "Which keyword is used to declare a variable in Python?",
-      options: ["var", "let", "def", "x = 5 (No keyword needed)"],
-      correctAnswer: "x = 5 (No keyword needed)",
-      explanation: "Python is dynamically typed and doesn't use a keyword for variable declaration.",
-    },
-    {
-      id: 2,
-      type: "multiple-choice",
-      question: "What is the output of: print(5 + 3)?",
-      options: ["53", "8", "Error", "None"],
-      correctAnswer: "8",
-      explanation: "Python adds the two numbers.",
-    },
-    {
-      id: 3,
-      type: "code-fill",
-      question: "Complete the code to print 'Hello':",
-      code: "print('_____')",
-      options: ["Hello", "World", "Python", "Code"],
-      correctAnswer: "Hello",
-      explanation: "The string inside print() is outputted.",
-    }
-  ],
+type LessonContent = {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  code?: string;
+  explanation?: string;
+};
+
+type Lesson = {
+  id: string;
+  title: string;
+  type: string;
+  xpReward: number;
+  content: LessonContent;
 };
 
 export default function LessonPage({ params }: { params: Promise<{ lessonId: string }> }) {
   const { lessonId } = use(params);
   const router = useRouter();
-  const { addXp, hearts, decrementHeart } = useUserStore();
+  const { addXp, hearts, decrementHeart, setUser } = useUserStore();
 
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [lesson, setLesson] = useState<Lesson | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [status, setStatus] = useState<"idle" | "correct" | "incorrect">("idle");
   const [completed, setCompleted] = useState(false);
 
-  const lessonData = lessons[lessonId as keyof typeof lessons] || lessons.variables;
-  const currentQuestion = lessonData[currentQuestionIndex];
-  const progress = ((currentQuestionIndex) / lessonData.length) * 100;
+  useEffect(() => {
+    const loadLesson = async () => {
+      try {
+        const data = await fetchClient(`/lessons/${lessonId}`);
+        setLesson(data);
+      } catch (err) {
+        console.error("Failed to load lesson", err);
+        // Fallback or redirect?
+        // router.push("/learn");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadLesson();
+  }, [lessonId]);
 
-  const handleCheck = () => {
-    if (!selectedOption) return;
+  const handleCheck = async () => {
+    if (selectedOption === null || !lesson) return;
 
-    if (selectedOption === currentQuestion.correctAnswer) {
+    const isCorrect = selectedOption === lesson.content.correctIndex;
+    
+    if (isCorrect) {
       setStatus("correct");
     } else {
       setStatus("incorrect");
@@ -61,33 +62,39 @@ export default function LessonPage({ params }: { params: Promise<{ lessonId: str
     }
   };
 
-  const handleNext = async () => {
+  const handleContinue = async () => {
     if (status === "incorrect") {
-       // Retry logic: just reset state to let them try again (simplification)
-       setStatus("idle");
-       setSelectedOption(null);
-       return;
+      setStatus("idle");
+      setSelectedOption(null);
+      return;
     }
 
-    if (currentQuestionIndex < lessonData.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1);
-      setSelectedOption(null);
-      setStatus("idle");
-    } else {
+    if (status === "correct" && lesson) {
+      // Complete lesson
       setCompleted(true);
-      addXp(20); // Award XP
       
       try {
-        const { xp, level } = useUserStore.getState();
-        await fetchClient("/users/me", {
-          method: "PATCH",
-          body: JSON.stringify({ xp, level }),
+        const result = await fetchClient(`/lessons/${lesson.id}/complete`, {
+          method: "POST",
+          body: JSON.stringify({ score: 100 }),
         });
+
+        // Update user state
+        setUser((prev) => ({
+          ...prev,
+          xp: prev.xp + result.xpEarned,
+          streak: result.streakUpdated ? prev.streak + 1 : prev.streak,
+        }));
+        
       } catch (err) {
-        console.error("Failed to sync progress", err);
+        console.error("Failed to submit lesson", err);
       }
     }
   };
+
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center bg-white text-sky-500">Loading...</div>;
+  }
 
   if (hearts === 0) {
     return (
@@ -96,7 +103,7 @@ export default function LessonPage({ params }: { params: Promise<{ lessonId: str
         <h1 className="mb-2 text-3xl font-bold text-slate-800">Out of Hearts!</h1>
         <p className="mb-8 text-slate-600">You need more hearts to continue learning.</p>
         <button
-          onClick={() => router.push("/")}
+          onClick={() => router.push("/learn")}
           className="w-full max-w-xs rounded-xl bg-sky-500 py-3 font-bold text-white shadow-[0_4px_0_0_#0284c7] active:translate-y-[4px] active:shadow-none"
         >
           Back to Home
@@ -105,14 +112,14 @@ export default function LessonPage({ params }: { params: Promise<{ lessonId: str
     );
   }
 
-  if (completed) {
+  if (completed || !lesson) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-sky-50 p-6 text-center">
         <div className="mb-6 text-6xl">🎉</div>
         <h1 className="mb-2 text-3xl font-bold text-slate-800">Lesson Complete!</h1>
-        <p className="mb-8 text-slate-600">You earned 20 XP</p>
+        <p className="mb-8 text-slate-600">You earned {lesson?.xpReward || 0} XP</p>
         <button
-          onClick={() => router.push("/")}
+          onClick={() => router.push("/learn")}
           className="w-full max-w-xs rounded-xl bg-sky-500 py-3 font-bold text-white shadow-[0_4px_0_0_#0284c7] active:translate-y-[4px] active:shadow-none"
         >
           Continue
@@ -121,17 +128,19 @@ export default function LessonPage({ params }: { params: Promise<{ lessonId: str
     );
   }
 
+  const currentQuestion = lesson.content;
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
       {/* Header */}
       <header className="flex items-center gap-4 px-4 py-6">
-        <button onClick={() => router.push("/")} className="text-slate-400 hover:text-slate-600">
-          ✕
+        <button onClick={() => router.push("/learn")} className="text-slate-400 hover:text-slate-600">
+          <X className="h-6 w-6" />
         </button>
         <div className="h-3 flex-1 overflow-hidden rounded-full bg-slate-100">
           <div
             className="h-full bg-sky-500 transition-all duration-500"
-            style={{ width: `${progress}%` }}
+            style={{ width: `50%` }} // TODO: Real progress
           />
         </div>
         <div className="flex items-center text-red-500">
@@ -152,19 +161,26 @@ export default function LessonPage({ params }: { params: Promise<{ lessonId: str
         )}
 
         <div className="grid gap-3">
-          {currentQuestion.options.map((option) => (
+          {currentQuestion.options.map((option, index) => (
             <button
-              key={option}
+              key={index}
               onClick={() => {
-                if (status === "idle") setSelectedOption(option);
+                if (status === "idle") setSelectedOption(index);
               }}
               className={`rounded-xl border-2 p-4 text-left font-medium transition-all ${
-                selectedOption === option
+                selectedOption === index
                   ? "border-sky-500 bg-sky-50 text-sky-600"
                   : "border-slate-200 hover:bg-slate-50"
               }`}
             >
-              {option}
+              <div className="flex items-center gap-3">
+                <div className={`flex h-6 w-6 items-center justify-center rounded border text-xs ${
+                    selectedOption === index ? "border-sky-500 text-sky-500" : "border-slate-300 text-slate-300"
+                }`}>
+                    {index + 1}
+                </div>
+                {option}
+              </div>
             </button>
           ))}
         </div>
@@ -191,12 +207,12 @@ export default function LessonPage({ params }: { params: Promise<{ lessonId: str
           )}
 
           <button
-            onClick={status === "idle" ? handleCheck : handleNext}
-            disabled={!selectedOption && status === "idle"}
+            onClick={status === "idle" ? handleCheck : handleContinue}
+            disabled={selectedOption === null && status === "idle"}
             className={`w-full rounded-xl py-3 font-bold text-white shadow-[0_4px_0_0_rgba(0,0,0,0.1)] active:translate-y-[4px] active:shadow-none transition-all ${
                status === "correct" ? "bg-green-500 shadow-green-700" :
                status === "incorrect" ? "bg-red-500 shadow-red-700" :
-               !selectedOption ? "bg-slate-300 shadow-slate-400 cursor-not-allowed" : "bg-sky-500 shadow-sky-700"
+               selectedOption === null ? "bg-slate-300 shadow-slate-400 cursor-not-allowed" : "bg-sky-500 shadow-sky-700"
             }`}
           >
             {status === "idle" ? "Check" : "Continue"}

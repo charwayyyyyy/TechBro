@@ -11,39 +11,38 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     
-    // Create basic avatar structure
-    const defaultAvatar = {
-      color: 'blue',
-      accessory: 'none',
-      background: 'default',
-    };
-
     return this.prisma.user.create({
       data: {
         email: createUserDto.email,
         username: createUserDto.username,
         passwordHash: hashedPassword,
-        avatar: createUserDto.avatar || defaultAvatar,
+        avatar: {
+          create: {
+            skinColor: createUserDto.avatar?.skinColor || '#f5d0c5',
+          }
+        },
       },
+      include: { avatar: true },
     });
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma.user.findUnique({ where: { email }, include: { avatar: true } });
   }
 
   async findOneByUsername(username: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { username } });
+    return this.prisma.user.findUnique({ where: { username }, include: { avatar: true } });
   }
 
   async findOne(id: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({ where: { id }, include: { avatar: true } });
   }
 
   async update(id: string, data: any): Promise<User> {
     return this.prisma.user.update({
       where: { id },
       data,
+      include: { avatar: true },
     });
   }
 }

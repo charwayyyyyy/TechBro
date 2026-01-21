@@ -12,9 +12,13 @@ interface UserState {
   dailyGoal: string; // 'casual' | 'regular' | 'serious' | 'insane'
   experienceLevel: string; // 'new' | 'beginner' | 'intermediate' | 'advanced'
   avatar: {
-    color: string;
-    accessory: string;
-    background: string;
+    skinColor: string;
+    skinItem: any;
+    faceItem: any;
+    hairItem: any;
+    outfitItem: any;
+    accessoryItem: any;
+    backgroundItem: any;
   };
 
   // Actions
@@ -37,9 +41,13 @@ export const useUserStore = create<UserState>()(
       dailyGoal: 'regular',
       experienceLevel: 'new',
       avatar: {
-        color: 'blue',
-        accessory: 'none',
-        background: 'default',
+        skinColor: '#ffdbac',
+        skinItem: null,
+        faceItem: null,
+        hairItem: null,
+        outfitItem: null,
+        accessoryItem: null,
+        backgroundItem: null,
       },
 
       setDailyGoal: (dailyGoal) => set({ dailyGoal }),

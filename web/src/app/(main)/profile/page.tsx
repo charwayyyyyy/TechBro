@@ -1,6 +1,9 @@
 "use client";
 
 import { useUserStore } from "@/store/use-user-store";
+import { UserAvatar } from "@/components/user-avatar";
+import Link from "next/link";
+import { Edit2 } from "lucide-react";
 
 export default function ProfilePage() {
   const { xp, streak, level, avatar, gems } = useUserStore();
@@ -15,12 +18,25 @@ export default function ProfilePage() {
 
       <div className="flex-1 px-4 py-6">
         <div className="mb-6 flex flex-col items-center">
-          <div className="mb-4 flex h-32 w-32 items-center justify-center rounded-full border-4 border-sky-100 bg-white text-6xl shadow-md">
-            <div 
-               className="h-full w-full rounded-full"
-               style={{ backgroundColor: avatar.color }} 
+          <div className="relative mb-4">
+            <UserAvatar 
+              skinColor={avatar.skinColor}
+              skinItem={avatar.skinItem}
+              faceItem={avatar.faceItem}
+              hairItem={avatar.hairItem}
+              outfitItem={avatar.outfitItem}
+              accessoryItem={avatar.accessoryItem}
+              backgroundItem={avatar.backgroundItem}
+              size="xl"
             />
+            <Link 
+              href="/avatar"
+              className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500 text-white shadow-lg transition hover:bg-sky-400"
+            >
+              <Edit2 className="h-4 w-4" />
+            </Link>
           </div>
+          
           <h2 className="text-2xl font-bold text-slate-900">User</h2>
           <p className="text-slate-500">Level {level}</p>
         </div>

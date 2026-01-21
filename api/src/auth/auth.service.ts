@@ -30,6 +30,8 @@ export class AuthService {
         email: user.email,
         xp: user.xp,
         level: user.level,
+        gems: user.gems,
+        hearts: user.hearts,
         avatar: user.avatar,
       },
     };
@@ -54,8 +56,7 @@ export class AuthService {
       user = await this.usersService.create({
         email: demoEmail,
         username: 'TechBroDemo',
-        password: 'password123', // In a real app, this would be hashed
-        avatar: { color: 'purple', accessory: 'glasses', background: 'default' },
+        password: 'password123', 
       });
       
       // Update with rich stats
@@ -64,7 +65,12 @@ export class AuthService {
         level: 5,
         streak: 14,
         gems: 500,
-        hearts: 5
+        hearts: 5,
+        avatar: {
+          update: {
+            skinColor: '#8d5524',
+          }
+        }
       });
       
       // Fetch again to get updated fields
