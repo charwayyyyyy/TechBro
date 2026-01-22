@@ -80,6 +80,7 @@ export const useUserStore = create<UserState>()(
         
         // Protect against null avatar from API
         if (user.avatar === null) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { avatar, ...rest } = user;
           return { ...state, ...rest };
         }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Code, Zap, Trophy, Sparkles, Gamepad2 } from "lucide-react";
@@ -24,6 +25,7 @@ const staggerContainer = {
 export default function LandingPage() {
   const router = useRouter();
   const { setUser } = useUserStore();
+  const [error, setError] = useState("");
 
   const handleDemoLogin = async () => {
     try {
@@ -35,7 +37,7 @@ export default function LandingPage() {
       router.push("/learn");
     } catch (err) {
       console.error("Failed to login as demo user", err);
-      alert("Failed to login as demo user. Please try again.");
+      setError("Failed to login as demo user. Please try again.");
     }
   };
 
