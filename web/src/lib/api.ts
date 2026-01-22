@@ -9,15 +9,23 @@ export async function fetchClient(endpoint: string, options: RequestInit = {}) {
     ...options.headers,
   };
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  const url = `${API_URL}${endpoint}`;
+  console.log(`[API] Fetching: ${url}`);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || "Something went wrong");
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Something went wrong");
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(`[API] Request failed: ${url}`, error);
+    throw error;
   }
-
-  return response.json();
 }
