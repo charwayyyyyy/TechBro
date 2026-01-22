@@ -32,6 +32,7 @@ export default function LessonPage({ params }: { params: Promise<{ id: string }>
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [status, setStatus] = useState<"idle" | "correct" | "incorrect">("idle");
   const [completed, setCompleted] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadLesson = async () => {
